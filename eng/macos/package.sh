@@ -78,6 +78,9 @@ if [ "${PACKAGE}" = "true" ]; then
   cp "${PKG_SCRIPT_ROOT}/Icon.icns" "${pkg_root}/Contents/Resources/"
   cp "${PKG_SCRIPT_ROOT}/Info.plist" "${pkg_root}/Contents/"
 
+  echo "Signing..."
+  codesign --deep --force --verify --verbose --sign "-" "${pkg_root}"
+
   echo "Creating tarball..."
   create_binary_tarball "${pkg_root}" "${OUTPUT}/${pkg_file}"
 
