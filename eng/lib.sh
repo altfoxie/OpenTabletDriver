@@ -258,13 +258,28 @@ build() {
   echo -e "\nBuild finished! Binaries created in ${OUTPUT}"
 }
 
+resolve_path() {
+  (
+    cd "$(dirname "$1")" || exit 1
+    local filename
+    filename=$(basename "$1")
+    while [ -L "$filename" ]; do
+      filename=$(readlink "$filename")
+      cd "$(dirname "$filename")" || exit 1
+      filename=$(basename "$filename")
+    done
+    local dir=$(pwd -P)
+    printf '%s\n' "$dir/$filename"
+  )
+}
+
 create_binary_tarball() {
   local source="${1}"
   local output="${2}"
 
   local last_pwd="${PWD}"
 
-  output="$(readlink -f "${output}")"
+  output="$(resolve_path "${output}")"
   cd "${source}/.."
   tar -czf "${output}" "$(basename ${source})"
 
